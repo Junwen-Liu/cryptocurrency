@@ -8,6 +8,7 @@ const PubSub = require('./app/pubsub');
 const TransactionPool = require('./wallet/transaction-pool');
 const Wallet = require('./wallet/index');
 const TransactionMiner = require('./app/transaction-miner');
+const { start } = require('repl');
 
 const isDevelopment = process.env.ENV === 'development';
 const REDIS_URL = isDevelopment ?  'redis://127.0.0.1:6379' : 'redis://:p47964925f5f0e3a706ee984a9556d27c507a075068599b3fc20f0695994af7ed@ec2-54-147-160-19.compute-1.amazonaws.com:19409';
@@ -29,6 +30,25 @@ app.use(express.static(path.join(__dirname, './client/dist')));
 app.get('/api/blocks', (req, res)=>{
     res.json(blockchain.chain);
 });
+
+app.get('/api/blocks/length', (req, res) => {
+    res.json(blockchain.chain.length);
+});
+
+app.get('/api/blocks/:id', (req, res) =>{
+    const {id} = req.params;
+    const {length} = blockchain.chain;
+
+    const blockReversed = blockchain.chain.slice().reverse();
+
+    let startIndex = (id-1)*5;
+    let endIndex = id*5; 
+
+    startIndex = startIndex < length ? startIndex: length;
+    endIndex = endIndex < length ? endIndex : length;
+
+    res.json(blockReversed.slice(startIndex,endIndex));
+})
 
 app.post('/api/mine', (req, res)=>{
     const {data} = req.body;
@@ -82,6 +102,20 @@ app.get('/api/wallet-info', (req, res)=>{
     });
 });
 
+app.get('/api/known-addresses', (req, res)=>{
+    const addressMap ={};
+
+    for(let block of blockchain.chain){
+        for(let transaction of block.data){
+            const recipients = Object.keys(transaction.outputMap);
+
+            recipients.forEach(recipient => addressMap[recipient] = recipient);
+        }
+    }
+
+    res.json(Object.values(addressMap));
+});
+
 app.get('*', (req, res)=>{
     res.sendFile(path.join(__dirname, './client/dist/index.html'));
 })
@@ -130,7 +164,7 @@ const walletBarAction = () => generateWalletTransaction({
     wallet: walletBar, recipient: wallet.publicKey, amount: 15
 })
 
-for(let i=0; i<10; i++){
+for(let i=0; i<20; i++){
     if(i%3===0){
         walletAction();
         walletFooAction();
