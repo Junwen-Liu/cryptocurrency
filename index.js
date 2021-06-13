@@ -140,7 +140,7 @@ const syncWithRootState = () => {
     })
 }
 
-if(isDevelopment){
+if(isDevelopment && process.env.GENERATE_PEER_PORT === 'false1'){
     const walletFoo = new Wallet();
 const walletBar = new Wallet();
 
@@ -164,7 +164,7 @@ const walletBarAction = () => generateWalletTransaction({
     wallet: walletBar, recipient: wallet.publicKey, amount: 15
 })
 
-for(let i=0; i<20; i++){
+for(let i=0; i<10; i++){
     if(i%3===0){
         walletAction();
         walletFooAction();

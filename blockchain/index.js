@@ -43,13 +43,14 @@ class BlockChain {
                         return false;
                     }
 
-                    const trueBalance = Wallet.calculateBalance({
-                        chain:this.chain,
-                        address: transaction.input.address
+                    const trueBalance = Wallet.calculateBalanceByTime({
+                        chain,
+                        address: transaction.input.address,
+                        timestamp:transaction.input.timestamp
                     });
 
-                    if(transaction.input.amount !== trueBalance){
-                        console.error('invalid input amount');
+                    if( transaction.input.amount !== trueBalance){
+                        console.error(`invalid input amount, inputamount: ${transaction.input.amount}, trueBalance: ${trueBalance}`);
                         return false;
                     }
 

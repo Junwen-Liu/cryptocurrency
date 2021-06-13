@@ -1,4 +1,4 @@
-const {STARTING_BALANCE} = require('../config');
+const {STARTING_BALANCE,REWARD_INPUT} = require('../config');
 const {ec, cryptoHash} = require('../util');
 const Transaction = require('./transaction');
 
@@ -37,15 +37,49 @@ class Wallet{
         for(let i=chain.length -1; i>0; i--){
             const block = chain[i];
 
-            for (let transcation of block.data){
-                if(transcation.input.address === address){
+            for (let transaction of block.data){
+                if(transaction.input.address === address){
                     hasConductedTransaction = true;
                 }
-                const addressOutput = transcation.outputMap[address];
+                const addressOutput = transaction.outputMap[address];
 
                 if(addressOutput){
-                    outputTotal += addressOutput;
+                    outputTotal = outputTotal + addressOutput;
                 }
+            }
+
+            if(hasConductedTransaction){
+                break;
+            }
+        }
+
+        return hasConductedTransaction ? outputTotal : STARTING_BALANCE + outputTotal;
+    }
+
+    static calculateBalanceByTime({chain, address, timestamp}){
+        let hasConductedTransaction = false;
+        let outputTotal = 0;
+
+        for(let i=chain.length -1; i>0; i--){
+            const block = chain[i];
+
+            for (let transaction of block.data){
+                
+                if(transaction.input.timestamp >= timestamp) {
+                    continue
+                }
+
+
+                if(transaction.input.address === address){
+                    hasConductedTransaction = true;
+                }
+
+                const addressOutput = transaction.outputMap[address];
+
+                if(addressOutput){
+                outputTotal = outputTotal + addressOutput;
+                }
+                
             }
 
             if(hasConductedTransaction){

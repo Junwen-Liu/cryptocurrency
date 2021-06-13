@@ -13,7 +13,9 @@ class TransactionMiner{
         //get the valid transcations from transaction pool
         const validTransactions = this.transactionPool.validTransactionsInPool();
 
-        //generate the miner's reward
+        //if(validTransactions.length !== 0){
+
+            //generate the miner's reward
         validTransactions.push(
             Transaction.rewardTransaction({minerWallet: this.wallet})
         )
@@ -27,6 +29,10 @@ class TransactionMiner{
 
         //clear the pool
         this.transactionPool.clear();
+        // }else{
+        //     alert("Can not mine an empty transaction pool");
+        // }
+        
     }
 }
 

@@ -1,6 +1,6 @@
 const {v1} = require('uuid');
 const {verifySignature} = require('../util');
-const {REWARD_INPUT, MINGING_REWARD, MINING_REWARD} = require('../config');
+const {REWARD_INPUT, MINING_REWARD} = require('../config');
 
 class Transaction {
     constructor({senderWallet, recipient, amount, outputMap, input}){
@@ -64,7 +64,8 @@ class Transaction {
 
     static rewardTransaction({minerWallet}){
         return new this({
-            input: REWARD_INPUT,
+            input: {address: REWARD_INPUT.address,
+                timestamp: Date.now()},
             //in javascript, when use a varable as a key, surround it with []
             outputMap: {[minerWallet.publicKey]: MINING_REWARD}
         })

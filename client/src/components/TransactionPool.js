@@ -3,7 +3,7 @@ import {Button} from 'react-bootstrap';
 import {Link, withRouter} from 'react-router-dom';
 import Transaction from './Transaction';
 
-const POLL_INTERVAL_MS = 10000;
+const POLL_INTERVAL_MS = 1000;
 
 class TransactionPool extends Component {
     state = {transactionPoolMap: {}}
@@ -23,8 +23,7 @@ class TransactionPool extends Component {
             }else{
                 alert('The mine-transaction block request did not coplete.');
             }
-        })
-        .then
+        });
     }
 
     componentDidMount(){
